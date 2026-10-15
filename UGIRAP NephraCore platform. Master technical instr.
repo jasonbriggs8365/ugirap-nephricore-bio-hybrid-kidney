@@ -1,0 +1,105 @@
+1. System Architecture
+The UGIRAP NephraCore™ platform integrates a Micro-Electromechanical Systems (MEMS) synthetic hemofiltration module, a photoelectrocatalytic (PEC) urea breakdown reactor, a living proximal tubule cell bioreactor, and a biomimetic dermal patch into a continuous, wearable renal assist loop.
+The system operates via two coupled fluidic loops:
+ * Extracorporeal / Recirculating Dialysate Loop: Recirculates a sealed 1.5 L biocompatible fluid volume across the filtration membrane and catalytic recovery units at 30 to 60 mL/min.
+ * Transdermal / Interstitial Sensing Loop: Extracts and monitors dermal interstitial fluid (ISF) at a passive rate of <50\ \mu\text{L/hr} for continuous biomarker tracking without inducing tissue compaction.
+Fluid and Data Flow Mapping
+ * Primary Fluid Input: Fluid enters the main manifold via native arterial pressure pulses (120/80\text{ mmHg}) and a transcutaneous magnetic impeller drive.
+ * Synthetic Filtration Compartment: Raw fluid flows across a single-crystal Silicon Nanopore Membrane (SNM) coated with sub-5 nm zwitterionic poly(sulfobetaine methacrylate) (pSBMA) hydrogel.
+ * Ultrafiltrate Stream: Protein-free ultrafiltrate (10\text{ to }30\text{ mL/hr}) is directed into the Proximal Tubule Bioreactor.
+ * Bioreactor Reabsorption: Human RPTEC/TERT1 cells actively reabsorb essential ions (Na^+, K^+, HCO_3^-), glucose, and water back into the biological return line.
+ * Spent Dialysate Stream: Concentrated uremic toxins flow into the PEC flow cell.
+ * PEC Urea Breakdown & Gas Separation: Blue micro-LED irradiation (460\text{ nm}, 25\text{ mW/cm}^2) oxidizes urea on a nanostructured hematite/NiOOH photoanode into N_2 and CO_2 gases, which vent passively through a 0.2\ \mu\text{m} hydrophobic ePTFE membrane protected downstream by synthetic torus-margo check valves.
+ * Regenerated Dialysate Return: Cleaned dialysate recirculates back to the SNM filtration manifold.
+ * Sensor Data Pipeline: ISFET telemetry (K^+, pH, urea) and piezoresistive pressure transducers stream real-time metrics to a 32-bit RISC-V microcontroller running the ce_os deterministic Rust kernel.
+ * Actuation Output: The controller drives piezo-acoustic surface acoustic wave (SAW) arrays (40\text{ kHz}) and actuates sub-microsecond electromagnetic safety line-block valves.
+2. Bill of Materials (BOM)
+| Component Name | Material Specification / Grade | Sourcing / Vendor Category | Quantity / Dimensions |
+|---|---|---|---|
+| Silicon Nanopore Membrane (SNM) | Single-crystal silicon, 5 to 7 nm rectangular slit pores (45\text{ nm} length) | MEMS Semiconductor Foundry | 1 array (180\text{ cm}^2) |
+| Zwitterionic Coating | Poly(sulfobetaine methacrylate) (pSBMA) hydrogel, sub-5 nm thickness | Specialty Polymer Synthetics | 1 monolayer |
+| Enclosure Chassis | Medical-Grade PEEK (Polyether ether ketone), Class VI, CNC machined | Medical CDMO Machining | 1 main chassis (220 \times 160 \times 85\text{ mm}) |
+| Bioreactor Cartridge Housing | Optical-grade Quartz / PEEK Class VI | Microfluidics Glassmaker | 1 flow chamber |
+| Tubule Cell Culture | RPTEC/TERT1 human renal proximal tubule epithelial cells (ATCC CRL-4031) | Cell Repository / ATCC | 1.5 \times 10^7\text{ cells} |
+| Piezo-Acoustic Array | Thin-film Aluminum Nitride (AlN) piezoceramics | Piezoceramic Foundry | 4 ring elements |
+| PEC Photoanode | Nanostructured Hematite (\alpha\text{-Fe}_2\text{O}_3) with NiOOH co-catalyst | Electrochemistry Supplier | 1 plate (100\text{ cm}^2) |
+| Degassing Membrane | Expanded polytetrafluoroethylene (ePTFE), 0.2\ \mu\text{m} hydrophobic pore | Precision Die-Cut Vendor | 1 disk (25\text{ mm} diameter) |
+| Torus-Margo Micro-Valves | Lithographically etched PDMS disk (3.4\ \mu\text{m}) on elastic micro-fibrils | Microfluidics Foundry | 2 inline valve assemblies |
+| Micro-Pumps | Dual opposite-phase piezoceramic micro-diaphragm pumps | Microfluidic Actuator Vendor | 2 units (30\text{--}60\text{ mL/min}) |
+| Dermal Patch Backing | Biocompatible PDMS / PGSA elastomer with micro-setae array | Soft Lithography Supplier | 1 patch (30 \times 20\text{ mm}) |
+| Fluid Lines | Platinum-cured medical silicone tubing (Shore A 50, ID 3.2\text{ mm}, OD 6.4\text{ mm}) | Medical Extrusion Vendor | 1.5 meters |
+| Connectors | PVDF quick-disconnect aseptic couplings | Medical Fluidics Supplier | 4 sets |
+| System Controller PCB | RISC-V 32-bit dual-core MCU, 4-layer custom FR4 board | PCB Pick-and-Place CDMO | 1 board assembly |
+| Battery Pack | LiFePO4 (Lithium Iron Phosphate) pack, 14.8\text{ V}, 3400\text{ mAh} (50.32\text{ Wh}) | Medical Power Integrator | 1 battery pack |
+3. Biological Subsystem
+ * Cell Source & Characterization: Conditionally immortalized human proximal tubule epithelial cells (RPTEC/TERT1, ATCC CRL-4031). Cells maintain differentiated proximal tubule phenotypes, expressing Aquaporin-1 (AQP1), Na^+/K^+-ATPase, organic anion/cation transporters (OAT1/OCT2), and ZO-1 tight junctions.
+ * ECM Substrate Coating: The interior quartz/PEEK bioreactor channels are sanitized and coated with a dual extracellular matrix layer consisting of Human Collagen Type IV (50\ \mu\text{g/mL}) and Fibronectin (10\ \mu\text{g/mL}) suspended in phosphate-buffered saline (PBS) at 37^\circ\text{C} for 2 hours.
+ * Seeding Protocol: RPTEC/TERT1 cells are trypsinized (0.05\% Trypsin-EDTA), resuspended in DMEM/F-12 medium supplemented with 5\ \mu\text{g/mL} insulin, 5\ \mu\text{g/mL} transferrin, 5\text{ ng/mL} selenium, and 10\text{ ng/mL} human EGF, and seeded into the bioreactor at 1.5 \times 10^5\text{ cells/cm}^2. Static attachment is maintained for 48 hours at 37^\circ\text{C} in a 5\%\ CO_2 humidified incubator.
+ * Fluid Shear Conditioning: Perfusion is initiated at 0.05\text{ dyne/cm}^2 and incrementally ramped over 12 hours until establishing continuous physiological fluid shear stress of 0.2\text{ to }0.5\text{ dyne/cm}^2. This shear rate induces 3D tubular lumen alignment, primary cilia expression, and tight junction maturation.
+ * Viability & Integrity Maintenance: Monolayer tightness is monitored via inline Trans-Epithelial Electrical Resistance (TEER) sensor arrays. TEER values must remain \ge 150\ \Omega\cdot\text{cm}^2. If shear stress drops below 0.1\text{ dyne/cm}^2 or exceeds 0.8\text{ dyne/cm}^2, the ce_os controller auto-adjusts pump duty cycles to prevent cell delamination.
+4. Synthetic Subsystem
+ * Filtration Membrane Specs: MEMS single-crystal Silicon Nanopore Membrane (SNM) etched with uniform rectangular slit pores (5\text{ to }7\text{ nm} width, 45\text{ nm} length, porosity >10^9\text{ pores/cm}^2). Total active surface area is 180\text{ cm}^2, providing a hydraulic permeability of 120\text{ mL/hr/mmHg/m}^2 while retaining >99.5\% of serum albumin.
+ * Zwitterionic Anti-Fouling Coating: Membrane surfaces undergo atom transfer radical polymerization (ATRP) to covalently graft a sub-5 nm poly(sulfobetaine methacrylate) (pSBMA) hydrogel monolayer. This layer forms an electrostatic hydration barrier that eliminates protein adsorption and platelet activation without systemic anticoagulants.
+ * Biomimetic Architectural Upgrades:
+   * Collembola Re-Entrant Structures: Mushroom-shaped overhanging nanostructures (200\text{ nm} height) are etched into channel entry zones to provide super-oleophobic non-wetting properties with breakout pressures >2.0\text{ bar}.
+   * Ligia Exotica Open-Capillaries: Microchannels incorporate 50\ \mu\text{m} Hair-Like Protrusions (HLPs) and 100\ \mu\text{m} Paddle-Like Protrusions (PLPs) to drive passive capillary fluid distribution.
+   * Torus-Margo Check Valves: Lithographically etched PDMS torus-margo valves (3.4\ \mu\text{m} torus diameter) provide passive elastohydrodynamic pressure limiting and instant gas-sealing upon detecting air bubbles.
+ * Dialysate Regeneration Chemistry: Operates on a closed 1.5 L recirculating dialysate volume. Urea clearance is driven by a photoelectrocatalytic (PEC) reactor containing a nanostructured hematite (\alpha\text{-Fe}_2\text{O}_3) photoanode coated with a NiOOH catalyst. Under 460 nm blue micro-LED illumination (25\text{ mW/cm}^2), urea is oxidized into nitrogen and carbon dioxide gas:
+Secondary sorbent layers containing 100\text{ g} zirconium phosphate and 50\text{ g} zirconium oxide scavenge trace free ammonium and phosphate ions.
+ * Pumps & Flow Dynamics: Dual opposite-phase piezoceramic diaphragm pumps maintain dialysate recirculation at 30\text{ to }60\text{ mL/min}. Ultrafiltration/sensing extraction flow is maintained at 10\text{ to }30\text{ mL/hr}.
+5. Fabrication & Assembly
+ * Chassis CNC Machining: Machine the main housing from medical-grade PEEK stock. Integrate fractal ribbing geometry along interior walls to resist hydrostatic crushing forces.
+ * Piezoelectric Transducer Bonding: Epoxy-bond thin-film AlN piezoceramic ring transducers to the outer titanium cassette housing using thermally conductive epoxy. Cure at 60^\circ\text{C} for 2 hours.
+ * Membrane Sealing: Seat the pSBMA-coated SNM inside the titanium cassette using FKM fluoroelastomer compression gaskets. Torque titanium assembly screws to 0.8\text{ Nm} in a cross-star pattern.
+ * PEC Cell Assembly: Mount the hematite/NiOOH photoanode inside the quartz flow cell. Position the 460 nm LED board 2.0\text{ mm} above the optical window and install the 0.2\ \mu\text{m} ePTFE degassing membrane over the exhaust manifold.
+ * Plumbing Integration: Connect platinum-cured silicone tubing between components. Connect PVDF quick-disconnect couplings to external ports.
+ * Cleanroom Sterilization: Assemble non-biological manifolds in an ISO Class 7 cleanroom. Sterilize PEEK housing and fluid lines via Ethylene Oxide (EtO); sterilize SNM cassettes via gamma irradiation (25\text{ kGy}).
+ * Bioreactor Integration: Inoculate and mature the RPTEC/TERT1 cell cartridge under aseptic conditions in a laminar flow hood, then connect to the primary fluid circuit using PVDF aseptic couplings.
+6. Control Electronics & Firmware
+ * Sensors:
+   * Piezoresistive Transmembrane Pressure (TMP) sensors (range 0\text{ to }300\text{ mmHg}, precision \pm 1\text{ mmHg}) placed pre- and post-filter.
+   * Ion-Selective Field-Effect Transistors (ISFET) monitoring potassium (K^+, 3.0\text{ to }7.0\text{ mmol/L}), urea, and pH (6.8\text{ to }7.8).
+   * Dual-wavelength optical leak detectors monitoring hemoglobin (415\text{ nm}) and micro-bubbles (650\text{ nm}, sensitivity >10\ \mu\text{m}).
+ * Controller Architecture: 32-bit RISC-V dual-core microcontroller executing ce_os, a bare-metal, no_std Rust operating system kernel. All memory buffers are statically allocated at compile time to prevent heap fragmentation.
+ * Control Loops: Executed on a hard real-time 10 ms control tick.
+   * Defouling Loop: If TMP exceeds 18.0\text{ mmHg}, ce_os triggers the 40\text{ kHz} DF-IPSS piezo-acoustic SAW sweep protocol (15\text{ ms} active pulse / 85\text{ ms} rest duty cycle) capped strictly below 0.25\text{ W/cm}^2 to prevent erythrocyte hemolysis.
+   * Urea Loop: Adjusts 460 nm LED intensity (5\text{ to }25\text{ mW/cm}^2) based on real-time ISFET urea conductivity readings.
+ * Alarms & Fail-Safes:
+   * Potassium Spike (K^+ > 6.2\text{ mmol/L}): Automatically throttles recirculation pumps and alerts user via BLE telemetry.
+   * Air Embolism / Pressure Surge: The CE-OS Deterministic Safety Firewall actuates an electromagnetic bypass line-block within 9.15\text{ ns} using Rayleigh acoustic cavitation collapse logic.
+7. Power System
+ * Battery Specifications: 14.8\text{ V} Lithium Iron Phosphate (LiFePO4) battery pack, 3400\text{ mAh} capacity (50.32\text{ Wh} total energy). LiFePO4 chemistry provides high thermal stability and resistance to thermal runaway.
+ * Power Budget Breakdown:
+   * System Controller (RISC-V MCU): 0.15\text{ W}
+   * Piezo-Acoustic SAW Drivers (Duty-Cycled): 0.25\text{ W} average (1.20\text{ W} peak)
+   * PEC 460 nm LED Array: 1.50\text{ W}
+   * Dual Piezoceramic Micro-Pumps: 1.80\text{ W}
+   * Sensors, ISFET Front-Ends & BLE Telemetry: 0.30\text{ W}
+   * Total Average Power Consumption: 4.00\text{ W}
+ * Runtime: 50.32\text{ Wh} / 4.00\text{ W} = 12.58\text{ hours} continuous untethered operation per charge.
+ * Charging Infrastructure: Dual hot-swappable battery pack configuration allowing continuous wear during battery swaps; integrated 15\text{ W} wireless inductive charging pad (3.5\text{ hours} full charge time).
+8. Performance Targets
+ * Functional GFR Equivalent: 10\text{ to }15\text{ mL/min} continuous filtration equivalent (100\% baseline metabolic clearance).
+ * Urea Clearance Rate: 15\text{ to }25\text{ grams/day} (>0.4\text{ g/hr/100 cm}^2 active photoanode area).
+ * Ultrafiltration Rate: 10\text{ to }30\text{ mL/hr} continuous fluid removal (240\text{ to }720\text{ mL/day}).
+ * System Footprint: Enclosure dimensions measure 220\text{ mm} \times 160\text{ mm} \times 85\text{ mm}.
+ * System Weight: Total dry weight \le 1.2\text{ kg}; operating wet weight (including 350 mL recirculating fluid) \le 1.55\text{ kg}.
+9. Testing & Validation
+ * Benchtop Validation:
+   * Hydrostatic Leak Test: Manifold is pressurized with sterile saline at 300\text{ mmHg} for 30 minutes; must demonstrate zero pressure drop (\Delta P = 0\text{ mmHg}).
+   * 72-Hour Recirculation Run: Continuous perfusion with synthetic uremic fluid (\text{BUN} = 80\text{ mg/dL}, Creatinine = 10\text{ mg/dL}) at 40\text{ mL/min} to confirm urea conversion efficiency and SNM flux stability (<5\% flux reduction).
+ * Biocompatibility Testing (ISO 10993):
+   * ISO 10993-4 (Hemocompatibility): Hemolysis index <1.0\%; zero platelet activation or thrombus formation over 72 hours; complement activation (C3a, SC5b-9) below baseline thresholds.
+   * ISO 10993-5 (Cytotoxicity): MEM elution testing on pSBMA coatings and PEEK housing showing >90\% cell viability.
+   * ISO 10993-10 (Irritation/Sensitization): Evaluation of UGIRAP gecko adhesive patch showing zero erythema or edema over continuous 72-hour dermal application.
+ * Preclinical Pathway: 30-day continuous wear trials in companion animal models (feline/canine IRIS Stage 3/4 CKD) to evaluate in-vivo urea clearance, non-thrombogenic performance, and PEC gas venting safety.
+ * FDA Regulatory Strategy: Class III medical device pathway (PMA). Preclinical animal safety and clearance data directly support FDA 21 CFR 312.300 (Expanded Access / Compassionate Use) petitions for terminally ill ESRD patients with failing vascular access.
+10. Failure Modes and Mitigations
+| Component / Function | Failure Mode | Primary Root Cause | Effect on System | Engineering Mitigation Strategy |
+|---|---|---|---|---|
+| Silicon Nanopore Membrane | Protein Bio-Cake Polarization | Protein adsorption under high flux | Transmembrane pressure exceeds 18\text{ mmHg} | 40\text{ kHz} DF-IPSS SAW acoustic sweep + superparamagnetic micro-wiper fallback |
+| PEC Sublimation Cell | Gas Bubble Ingress / Outgassing | PEC urea sublimation or air leaks | Potential vascular air embolism risk | Hydrophobic 0.2\ \mu\text{m} ePTFE vent + Torus-margo micro-valve line block |
+| Proximal Tubule Bioreactor | Cell Monolayer Delamination | Fluid shear stress spike (>0.8\text{ dyne/cm}^2) | Loss of active ion/glucose reabsorption | Real-time shear auto-regulation + TEER monolayer integrity monitoring |
+| UGIRAP Gecko Patch | Dermal Patch Detachment | High lateral shear or sweat accumulation | Dislodgement of external module | Van der Waals micro-setae array + 10\text{--}50\ \mu\text{m} capillary sweat channels |
+| Controller Electronics | Firmware Logic Anomaly / Fault | Watchdog timer expiration or memory corruption | Uncontrolled pump/sensor state | Bare-metal no_std Rust + 9.15\text{ ns} Rayleigh cavitation line-block interlock |
+(Note: Exact proprietary chemical compositions of specialized trade-secret ATRP initiator catalysts for pSBMA grafting are beyond standard published specifications and are specified using equivalent medical-grade polymer synthesis standards.)
