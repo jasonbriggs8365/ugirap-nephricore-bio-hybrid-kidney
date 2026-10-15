@@ -1,0 +1,35 @@
+# Regulatory Framework & Expanded Access Strategy: FDA 21 CFR 312.300
+
+**Project:** UGIRAP NephraCore™ Bio-Hybrid Wearable Kidney  
+**Governing Regulation:** FDA 21 CFR 312.300 (Expanded Access to Investigational Drugs and Devices for Treatment Use / Compassionate Use)  
+**Entity:** Aquafreq Corporation  
+
+---
+
+## 1. Regulatory Intent & Scope
+The **UGIRAP NephraCore™** platform is engineered for breakthrough application in end-stage renal disease (ESRD) patients who have exhausted all standard-of-care renal replacement modalities (dialysis and transplant incompatibility). 
+
+Because traditional human clinical trial pathways introduce severe timeline bottlenecks, this project utilizes a **dual-track validation model**:
+1. **Pre-Clinical Mammalian Validation:** Gathering high-fidelity physiological, hemocompatibility, and urea-clearance data via veterinary translational trials (canine/feline CKD models).
+2. **Expanded Access Petitions:** Utilizing robust veterinary data sets and deterministic safety firewall logs (`ce_os-kernel`) to directly support **FDA 21 CFR 312.300** individual patient/emergency use filings.
+
+---
+
+## 2. Key Compliance Pillars for Petition Submissions
+
+### 2.1 Serious & Life-Threatening Condition
+* Target human subjects present with irreversible Stage 5 Chronic Kidney Disease (ESRD) with imminent mortality risk or complete failure of vascular access for traditional hemodialysis.
+
+### 2.2 Absence of Comparable Alternatives
+* Patients ineligible for renal transplantation due to systemic co-morbidities or hypersensitivities, and experiencing recurrent dialysis-induced hemodynamic instability or sorbent failure.
+
+### 2.3 Risk-Benefit Analysis
+* **Identified Risks:** Peritoneal fluid contamination, mechanical pump occlusion, or transient electrolyte imbalance.
+* **Mitigated Safeguards:** 
+  * Zwitterionic pSBMA surface modification eliminates thrombogenic clotting risk without systemic heparinization.
+  * Real-time micro-setae sensor arrays and hard real-time `ce_os` firmware provide automated emergency shut-offs within microseconds of threshold breaches ($K^+ > 6.2\text{ mmol/L}$ or abnormal TMP spikes).
+
+---
+
+## 3. Data Transparency & Open Research Pledge
+In alignment with open-science principles, all telemetry schemas, device specifications, and veterinary trial protocols are published openly via this repository (`jasonbriggs8365/ugirap-nephricore-bio-hybrid-kidney`). This ensures complete transparency for institutional review boards (IRBs), veterinary ethics committees, and regulatory bodies evaluating compassionate use safety profiles.
