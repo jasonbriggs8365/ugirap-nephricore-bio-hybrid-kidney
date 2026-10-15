@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NephraCoreTelemetryPacket",
+  "type": "object",
+  "properties": {
+    "device_id": {
+      "type": "string",
+      "description": "Unique hardware identifier of the NephraCore unit."
+    },
+    "timestamp_utc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of telemetry capture."
+    },
+    "system_status": {
+      "type": "object",
+      "properties": {
+        "operating_mode": { "type": "string", "enum": ["ACTIVE_PERFUSION", "REGENERATION_CYCLE", "SAFETY_BYPASS", "MAINTENANCE"] },
+        "battery_percentage": { "type": "number", "minimum": 0.0, "maximum": 100.0 },
+        "transmembrane_pressure_mmhg": { "type": "number" },
+        "recirculating_flow_rate_ml_min": { "type": "number" }
+      },
+      "required": ["operating_mode", "battery_percentage", "transmembrane_pressure_mmhg", "recirculating_flow_rate_ml_min"]
+    },
+    "sensor_metrics": {
+      "type": "object",
+      "properties": {
+        "interstitial_potassium_mmol_l": { "type": "number", "minimum": 1.0, "maximum": 10.0 },
+        "blood_urea_nitrogen_mg_dl": { "type": "number" },
+        "ph_level": { "type": "number", "minimum": 6.0, "maximum": 8.0 },
+        "temperature_celsius": { "type": "number", "minimum": 32.0, "maximum": 42.0 }
+      },
+      "required": ["interstitial_potassium_mmol_l", "ph_level", "temperature_celsius"]
+    },
+    "safety_interlocks": {
+      "type": "object",
+      "properties": {
+        "fault_flag": { "type": "boolean" },
+        "fault_code": { "type": "string" },
+        "automatic_throttle_engaged": { "type": "boolean" }
+      },
+      "required": ["fault_flag", "automatic_throttle_engaged"]
+    }
+  },
+  "required": ["device_id", "timestamp_utc", "system_status", "sensor_metrics", "safety_interlocks"]
+}
